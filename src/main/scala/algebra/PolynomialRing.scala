@@ -12,6 +12,32 @@ object PolynomialRing {
   val polyOne: POLY = Map(0 -> 1.0).withDefaultValue(0.0) // ???
   val polyZero: POLY = Map().withDefaultValue(0.0) // ???
 
+  def polyToString(p: POLY): String = {
+    if (p.keys.forall { k => p(k) == 0.0 })
+      "0"
+    else {
+      val terms = for {
+        exponent <- p.keys.toVector.sorted.reverse
+      } yield {
+        val coef = p(exponent)
+        val str =
+          (if (coef == coef.round)
+             coef.toInt.toString
+           else
+             coef.toString)
+        (if (coef == 0.0)
+           ""
+         else if (exponent == 0)
+           str
+         else if (exponent == 1)
+           str ++ "X"
+         else
+           s"${str}X^$exponent")
+      }
+      terms.mkString(" + ")
+    }
+  }
+
   def polyAlmostEqual(p1: POLY, p2: POLY, epsilon: Double = .0001): Boolean = {
     val exponents = p1.keys.toSet.union(p2.keys.toSet)
     // must check <= epsilon, not < epsilon because epsilon might be == 0.0
@@ -22,8 +48,7 @@ object PolynomialRing {
 
   def polyAdd(p1: POLY, p2: POLY): POLY = {
     val exponents = p1.keys.toSet.union(p2.keys.toSet)
-    (for { k <- exponents } yield k -> (p1(k) + p2(k)))
-      .toMap
+    (for { k <- exponents } yield k -> (p1(k) + p2(k))).toMap
       .withDefaultValue(0.0)
   }
 
@@ -37,13 +62,13 @@ object PolynomialRing {
 
   def polyMultiply(p1: POLY, p2: POLY): POLY = {
     // first multiply a polynomial by a monomial
-    def multMonomial(k1:Int, v1:Double, p:POLY):POLY = {
-      (for{ (k2,v2) <- p } yield (k1 + k2) -> (v1 * v2))
+    def multMonomial(k1: Int, v1: Double, p: POLY): POLY = {
+      (for { (k2, v2) <- p } yield (k1 + k2) -> (v1 * v2))
         .withDefaultValue(0.0)
     }
     // build a sequence of POLY each is a monomial * p2
     //   one monomial for each term in p1
-    val polys = for {(k1, v1) <- p1} yield multMonomial(k1, v1, p2)
+    val polys = for { (k1, v1) <- p1 } yield multMonomial(k1, v1, p2)
     polys.fold(polyZero)(polyAdd)
   }
 
@@ -71,26 +96,31 @@ object PolynomialRing {
       polyMultiply(p, polySlowPower(p, n - 1))
   }
 
-  def findRoot(p:POLY):Double = {
-    // first find left and right such that the polynomial
-    // has opposite sign at left and right
-    ???
-    // now perform a binary search to find a root
-    ???
+  def polyValue(p: POLY, x: Double): Double = {
+    import functions.Power.power
+    p.foldLeft(0.0) { case (acc, (exp: Int, coef: Double)) =>
+      acc + coef * power(x, exp)
+    }
   }
 
-  def polyValue(p:POLY,x:Double):Double = {
-    ???
-  }
-
-  def randomPoly(n: Int): POLY = {
+  def randomPoly(n: Int, asInt: Boolean = true): POLY = {
     assert(n >= 0)
     val rand = new Random()
     val p = for {
       k <- 0 to n
       if rand.nextBoolean()
       coef = rand.between(-10.0, 10.0)
-    } yield k -> coef
+    } yield k -> (if (asInt) coef.round else coef)
     p.toMap.withDefaultValue(0.0)
+  }
+
+  def main(argv: Array[String]): Unit = {
+    val p1 = randomPoly(4)
+    println(polyToString(p1))
+    val p2 = randomPoly(4)
+    println(polyToString(p2))
+    println(polyToString(polyAdd(p1, p2)))
+    println(polyToString(polyMultiply(p1, p2)))
+    println(polyToString(polyFastPower(p1, 10)))
   }
 }

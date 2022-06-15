@@ -1,5 +1,0 @@
-package convergence
-
-object Convergence {
-
-}

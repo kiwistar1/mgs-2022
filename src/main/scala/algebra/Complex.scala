@@ -6,13 +6,13 @@ object Complex {
 
   type COMPLEX = (Double, Double)
 
-  val i: COMPLEX = ???
+  lazy val i: COMPLEX = ???
 
   // unit for complex multiplication
-  val one: COMPLEX = ???
+  lazy val one: COMPLEX = ???
 
   // unit for complex addition
-  val zero: COMPLEX = ???
+  lazy val zero: COMPLEX = ???
 
   def complexToMatrix(z: COMPLEX): MATRIX = {
     ???

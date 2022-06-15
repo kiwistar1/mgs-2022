@@ -1,10 +1,13 @@
 package functions
 
 import scala.math.sqrt
+
+// TASK:
+//      Write a test to validate the following function.
+
 import cats.instances.int
 import scala.collection.View
 object QuadraticFormula {
-
 
 // the sign of the discriminant determines how many real roots the polynomial has
   def discriminant(a: Int, b: Int, c: Int): Int = {
@@ -25,7 +28,6 @@ object QuadraticFormula {
       List((-b - sqrt(d)) / (2.0 * a), (-b + sqrt(d)) / (2.0 * a))
   }
 
-
   // TASK:
   //    Update the formula to compute the discriminant,
   //    and detect whether there are zero, one, or two real roots.
@@ -41,6 +43,5 @@ object QuadraticFormula {
 
   def main(argv: Array[String]): Unit = {
     println("Hello this is main of QuadraticFormula")
-
   }
 }

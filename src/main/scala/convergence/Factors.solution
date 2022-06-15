@@ -1,0 +1,64 @@
+package functions
+
+object Factors {
+
+  def factor1(n: Int, k: Int, done: List[Int]): List[Int] = {
+    if (n == 1)
+      done
+    else if (n % k == 0)
+      factor1(n / k, k, k :: done)
+    else
+      factor1(n, k + 1, done)
+  }
+
+  def factors(n: Int): List[Int] = {
+    factor1(n, 2, List())
+  }
+
+  def factorsOfFactorial(n: Int): List[Int] = {
+    for {
+      k <- (2 to n).toList
+      f <- factors(k)
+    } yield f
+  }
+
+  def cancel(
+      nFactors: List[Int],
+      dFactors: List[Int],
+      qFactors: List[Int]
+  ): List[Int] = {
+    if (dFactors == List())
+      qFactors ++ nFactors
+    else if (nFactors.head == dFactors.head)
+      cancel(nFactors.tail, dFactors.tail, qFactors)
+    else
+      cancel(nFactors.tail, dFactors, nFactors.head :: qFactors)
+  }
+
+  def choose(n: Int, k: Int): Int = {
+    val nFactors = factorsOfFactorial(n).sorted
+    val dFactors = (factorsOfFactorial(k) ++ factorsOfFactorial(n - k)).sorted
+
+    //println(s"n=$nFactors")
+    //println(s"d=$dFactors")
+    val numCombinations = cancel(nFactors, dFactors, List())
+    //println(numCombinations)
+    numCombinations.product
+  }
+
+  def main(argv: Array[String]): Unit = {
+    import functions.Factorial.factorial
+
+    for { n <- 2 to 100 } {
+      println(s"$n --> ${factors(n)}")
+      println(s"     $n! --> ${factorsOfFactorial(n)}")
+    }
+    for {
+      n <- 2 to 20
+      k <- 1 to n
+      c1 = choose(n, k)
+      c2 = factorial(n) / (factorial(k) * (factorial(n - k)))
+      if c1 != c2
+    } println(s"n=$n k=$k c1=$c1 c2=$c2")
+  }
+}

@@ -8,6 +8,7 @@
 \usepackage{svg}
 \usepackage{xspace}
 \usepackage{amssymb}
+\usepackage{cancel}
 \usepackage{color,colortbl}
 \definecolor{code}{rgb}{ 0,0,0}
 \newcommand\code[1]{\textcolor{code}{\texttt{#1}}\xspace}
@@ -17,6 +18,7 @@
   \includegraphics[#1]{#2}}\abovebaseline[-.5\ht\mybox]{%
   \addstackgap{\usebox{\mybox}}}}
 \newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
 
 \newcommand\vs{\textit{vs.}\xspace}
 \newcommand\eg{\textit{e.g.}\xspace}
@@ -883,7 +885,7 @@ then
 
 
 \subsection{Fibonacci numbers}
-
+\label{sec.fibonacci.numbers}
 \begin{itemize}
 \item Find the file \code{Fibonacci.scala}
 \item Implement a recursive function such that given $n$, the function
@@ -910,6 +912,10 @@ then
 
 \item Make sure all the tests pass in \code{SetsAndFunctionsTestSuite.scala}.
 \end{itemize}
+
+%% TODO
+%% add chapter about exists/foreach, exercises already in slides
+
 
 \chapter{Abstract Algebra}
 
@@ -975,8 +981,6 @@ shows an example of his handwriting.
 \label{fig.galois.hand}
 \end{figure}
 
-
-
 In this unit we will study sets with mathematical structure.  This
 approach to \emph{abstract algebra} is of course much cleaner than
 that introduced by Galois.  Galois somewhat flippantly introduced the
@@ -1024,6 +1028,16 @@ $(S,\circ)$ is called a \emph{monoid} if
 \noindent Notice that we assume that a monoid has an identity element, but we
 don't assume that it is unique.  Can a monoid have more than one
 identity element: $e_1$ and $e_2$?  The answer is no, but why?  
+
+\begin{theorem}\label{th.identity.unique}
+  The identity of a monoid is unique.
+\end{theorem}
+\begin{proof}
+  Suppose $e_1$ and $e_2$ are both identities of monoid, $M$.
+  Since $e_1$ is an identity, then $e_1e_2=e_2$.  But since $e_2$ is an identity,
+  then $e_1e_2 = e_1$. Thus
+  \[e_1 = e_1e_2 = e_2\]
+\end{proof}
 
 \subsection{Examples of monoids}
 
@@ -1138,8 +1152,10 @@ take the 12-clock above.  Which of these equations can be solved in the integers
 \item Solve for $c$ in $7\times c = 11$.
 \end{enumerate}
 
-To systematically solve such an equation we need to be able to find an inverse with
-respect to the operation of the monoid.  
+We observe that some such equations have unique solutions, such as
+$4\times b = 8 \implies b=2$. However, to systematically solve such an
+equation we need to be able to find an inverse with respect to the
+operation of the monoid.
 
 \begin{align*}
   a\times 3 &= 7\\
@@ -1147,7 +1163,7 @@ respect to the operation of the monoid.
 \end{align*}
 
 But there is no integer, $3^{-1}\in\mathbb{Z}$, such that $1 = 3 \times 3^{-1}$.
-However, some sets do have the property that every element is
+However, some monoids do have the property that every element is
 invertible. A monoid for which every element has a unique inverse is
 called a group.  Essential to the idea of inverse is that an inverse
 be unique.
@@ -1155,19 +1171,40 @@ be unique.
 
 
 \begin{definition}[Group]
-$(S,\circ)$ is called a \emph{group} if
+$(G,\circ)$ is called a \emph{group} if
 \begin{enumerate}
-\item $(S,\circ)$ is a monoid.
-\item Inverse: $\forall a\in S~\exists a^{-1}\in S$ such that $a\circ a^{-1} = a^{-1} \circ a = e$
+\item $(G,\circ)$ is a monoid.
+\item Inverse: $\forall a\in G~\exists a^{-1}\in G$ such that $a\circ a^{-1} = a^{-1} \circ a = e$
 \end{enumerate}
-If $a\circ b = b\circ a$ for all $a,b\in S$, then we call S an \emph{Abelian} group.
+\end{definition}
+
+\begin{definition}[Abelian Group]
+  If $G$ is a group such that $a\circ b = b\circ a$ for all
+  $a,b\in G$, then we call $G$ an \emph{Abelian} group.
 \end{definition}
 
 
+
 A group has an identity which is also the identity of the monoid,
-which we already know to be unique.  But we can ask a similar
-uniqueness question about the inverse.  Can an element $a\in S$ have
-two different inverses?  No, but why?
+which we already know to be unique.  See
+Theorem~\ref{th.identity.unique}.  But we can ask a similar uniqueness
+question about the inverse.  Can an element $a\in S$ have two
+different inverses?  No, but why?
+
+\begin{theorem}
+  Each element of a group has exactly one inverse.
+\end{theorem}
+\begin{proof}
+  Let $G$ be a group with identity $e$. Let $a\in G$ have inverses $x$ and~$y$.
+  \begin{align*}
+    x &= x\circ e \\
+    &= x \circ ( a \circ y)\\
+    &= (x \circ  a) \circ y\\
+    &= e \circ y\\
+    &= y
+  \end{align*}
+\end{proof}
+
 
 \subsection{Examples of groups}
 \begin{enumerate}
@@ -1297,21 +1334,89 @@ addition and the multiplication is the distributive axiom.
 Multiplication or addition may be defined in strange ways, but if the
 ring axioms are satisfied, the ring is valid.
 
+In the integers $0\cdot a = a\cdot 0 = 0$.  Actually this principle,
+called \emph{annihilation} is true for rings in general as shown in
+Theorem~\ref{th.ring.annihilation}.  Several other familiar
+connections between multiplication and addition also hold in general
+for rings.  In particular $-1 \cdot -1 = 1$
+(Theorem~\ref{th.ring.-1}), and $-1\cdot a = -a$
+(Theorem~\ref{th.ring.-a}).
+
+\begin{theorem}\label{th.ring.annihilation}
+  For ring, $S$ with additive identity $z$ and multiplicative identity $e$, we have $za = az = z$ for all $a\in S$.
+\end{theorem}
+Let's denote the additive inverse of any element $x$ by $\overline{x}$
+\begin{proof}
+  \begin{align*}
+    za &= za + z\\
+    &= za + (za + \overline{za})\\
+    &= (za + za) + \overline{za}\\
+    &= (z + z)a  + \overline{za}\\
+    &= za  + \overline{za}\\
+    &= z
+  \end{align*}
+  Likewise,
+  \begin{align*}
+    aa &= az + z\\
+    &= az + (az + \overline{az})\\
+    &= (az + az) + \overline{az}\\
+    &= a(z + z)  + \overline{az}\\
+    &= az  + \overline{az}\\
+    &= z
+  \end{align*}
+  
+\end{proof}
+\begin{theorem}\label{th.ring.-1}
+  For ring, $S$, with multiplicative identity
+  $e$, we have $\overline{e}\cdot\overline{e} = e$.
+\end{theorem}
+\begin{proof}
+ Let $z$ be the additive identity of the ring.
+  \begin{align*}
+    \overline{e}\cdot\overline{e} &= \overline{e}\cdot\overline{e} + z\\
+    &= \overline{e}\cdot\overline{e} + (\overline{e} + e)\\
+    &= \overline{e}\cdot\overline{e} + (\overline{e}\cdot e + e)\\
+    &= (\overline{e}\cdot\overline{e} + \overline{e}\cdot e) + e\\
+    &= \overline{e}\cdot(\overline{e} + e) + e\\
+    &= \overline{e}z + e\\
+    &= z + e & \text{By Theorem~\ref{th.ring.annihilation}}\\
+    &=  e 
+\end{align*}
+\end{proof}
+
+\begin{theorem}\label{th.ring.-a}
+  For ring, $S$, with 
+  $e$, we have $\overline{e}\cdot a = \overline{a}$ for all $a\in S$.
+\end{theorem}
+\begin{proof}
+  \begin{align*}
+    \overline{e}\cdot a &=     \overline{e}\cdot a + a + \overline{a}\\
+    &=     \overline{e}\cdot a + e\cdot a + \overline{a}\\
+    &=     (\overline{e} + e)\cdot a + \overline{a}\\
+    &=     z\cdot a + \overline{a}\\
+    &=     z + \overline{a} & \text{By Theorem~\ref{th.ring.annihilation}}\\
+    &=     \overline{a}
+  \end{align*}
+\end{proof}
+
 \subsection{Examples of rings}
 \begin{enumerate}
 \item The integers $(\mathbb{Z},+,\times)$ is a ring.
 \item The integers $(\mathbb{N},+,\times)$ is not a ring.  Why?
 \item The set of $n\times n$ matrices, for a fixed value of $n>0$ is a ring.
 \item The set of $2\times 3$ matrices is not a ring.  Why?
-\item The set of polynomials with integer coefficients such as ${3x^4+2x^2-5x+1}$ is a ring.
-\item The set of polynomials with real coefficients such as ${3x^4+\pi{}x^2-ex+\sqrt{5}}$ is a ring.
+\item $\mathbb{Z}[x]$, the set of polynomials with integer
+  coefficients such as ${3x^4+2x^2-5x+1}$ is a ring.
+\item $\mathbb{Q}[x]$, $\mathbb{R}[x]$, $\mathbb{C}[x]$,
+  $(\mathbb{Z}/p)[x]$ for prime $p$. 
 \item The set of polynomials with rational coefficients with leading
-  coefficient equal to 1 is not a ring under \code{normal} addition
-  and multiplication.  ($x^3 + \frac{1}{2}x^2+ 5x - \frac{2}{3}$)  Why?  Can you define an alternative addition
-  and multiplication which makes this set a ring?
-\item The set of subsets of a given set using intersection as multiplication and exclusive or as addition forms a ring.
-\item The set of 8-bit sequences (bytes) consisting of 0 and 1, such as 00101101,
-  with the two operations AND and XOR, defined bitwise using the following tables is a ring.
+  coefficient equal to 1 is not a ring.
+  ($x^3 + \frac{1}{2}x^2+ 5x - \frac{2}{3}$)  Why?
+\item The set of subsets of a given set using intersection as
+  multiplication and exclusive or as addition forms a ring.
+\item The set of 8-bit sequences (bytes) consisting of 0 and 1, such
+  as 00101101, with the two operations AND and XOR, defined bitwise
+  using the following tables is a ring.
 \begin{center}
     \begin{tabular}{c||c|c|}
       XOR & 0 & 1 \\
@@ -1580,6 +1685,14 @@ the power of $|n|$.
 \includegraphics[width=0.65\textwidth]{cs.jpg}
 \end{figure}
 
+\subsection{Some new types}
+\begin{itemize}
+\item \code{Option[T]}, \code{Some(x)}, \code{None}
+\item \code{Map[S,T]}
+\item Tuples \code{(S,T)}
+\item \code{X => Y}
+\end{itemize}
+
 \subsection{Monoid}
 \begin{itemize}
 \item \code{String} concatenation
@@ -1590,6 +1703,7 @@ the power of $|n|$.
   \code{fastPower}.
 \end{itemize}
 
+
 \subsection{Higher order functions}
 You will need functions like this to implement the Team Project in Section~\ref{sec.team.project.structures}.
 
@@ -1599,7 +1713,7 @@ given input value.
 
 \begin{itemize}
 \item \code{find} --- find an element of a collection (if such exists)
-  which satisfies a given predicate.
+  which satisfies a given predicate.  \code{Option[T]}
 \item \code{forall} --- does every element of a collection satisfy a
   given predicate.  Remember the collection might be empty.
 \item \code{exists} --- does at least one element of a sequence
@@ -1683,7 +1797,41 @@ ${x_{right} - x_{left} < \varepsilon}$.
 \includegraphics[width=0.85\textwidth]{coding.jpg}
 \end{figure}
 
+\subsection{Compute number of combinations}
+Recall the definition
+\[{n\choose k} = \frac{n!}{k!(n-k)!}\,.\]
+Write function to compute this quanity two different ways.
+\begin{enumerate}
+\item Compute it directly by computing the three factorials and performing
+  the integer division.
+\item Rather than computing $n!$ directly, express it as a list of
+  prime factors.  \Ie,
+  \begin{itemize}
+  \item implement a function which, given $n$, uses
+    recursion to compute and return the list of prime factors of $n$.
+  \item Use that function to implement a function which, given $n$, returns
+    the prime factors of $n!$.
+  \item Effectively perform the division by
+    removing all the prime factors in the denominator, $k!(n-k)!$, from
+    those of the denominator, $n!$.
+  \item Finally, multiply the remaining
+    factors to compute~$n\choose k$.
+  \end{itemize}
+\end{enumerate}
 
+\Eg,
+\begin{align*}
+  {7\choose 3} &= \frac{7}{3!(7-3)!}\\
+  &= \frac{7}{3!~\cdot~4!}\\
+  &= \frac{7\cdot 6\cdot 5\cdot 4\cdot 3\cdot 2}{(3\cdot 2)(4\cdot 3\cdot 2)}\\  &= \frac{7\cdot \cancel{3}\cdot \cancel{2}
+    \cdot 5\cdot \cancel{2\cdot 2\cdot 3\cdot 2}}{(\cancel{3}\cdot \cancel{2})(\cancel{2\cdot 2\cdot 3\cdot 2})}\\
+  &= 7 \cdot 5\\
+  &= 35
+\end{align*}
+
+Compare the two functions both in terms of computation time, and also
+find values of $n\choose k$ which are computable by one function but
+not the other because of integer overflow.
 
 \subsection{Team Project: Structure Recognition}
 \label{sec.team.project.structures}
@@ -1706,33 +1854,34 @@ ${x_{right} - x_{left} < \varepsilon}$.
 \item Implement matrix arithematic functions: add, scale, subtract,
   multiply, identity, etc..
   
-\item Implement fast monoid multiply for matrices:
+\item Implement power multiply for matrices:
   \code{matrixPower}.  Do this in two different ways: by repeated
   multiplication (compute $M^n$ as a result of $n-1$
-  multiplications), and again using \code{fastPower}.  How do you
-  specify the monoidic arguments (multiplication and unit) for
-  \code{matrixPower} using \code{fastPower}.
+  multiplications), and again using the fast power algorithm.
   
 \item Can you devise a way to test whether \code{fastPower} is really
-  faster than \code{slowPower}? To compute a power of matrix $m$
-  the \emph{slow} way, you compute by $m-1$ consecutive
-  multiplications, e.g., using a recursive function.
+  faster?
 
-\item Test your code using \code{scalatest}. In the test case,
-  multiply the slow way and assert that the result is the same as
-  \code{matrixPower}.  Can you experimentally determine the time
-  needed to raise a large $m\times m$ matrix to the $n$th power
-  using the two algorithms?  To find out how to compute the time spent
-  in a scala function, do an internet search.
+%% \item Test your code using \code{scalatest}. In the test case,
+%%   multiply the slow way and assert that the result is the same as
+%%   \code{matrixPower}.  Can you experimentally determine the time
+%%   needed to raise a large $m\times m$ matrix to the $n$th power
+%%   using the two algorithms?  To find out how to compute the time spent
+%%   in a scala function, do an internet search.
   
 \item Use the \code{matrixPower} function to compute any three
   consecutive Fibonacci numbers: $F_{n-1}$, $F_{n}$, and $F_{n+1}$,
   \[\begin{bmatrix}1&1\\1&0\end{bmatrix}^n = \begin{bmatrix}F_{n+1}&F_n\\F_n&F_{n-1}\end{bmatrix}\]
   Do these results agree with those you computed in unit 1?
   
-\item You now have three ways to compute Fibonacci numbers.  
+\item In Section~\ref{sec.fibonacci.numbers}, you computing
+  Fibonacci number using an exponentially complex algorithm.
+  Now you have a way which you suspect is more efficient (faster).
   Devise an experiment to determine which of the approaches is
-  faster in terms of execution time?
+  faster in terms of execution time?  Hint, you may need to contstruct
+  a loop to do the same computation 100 times or 1000 times, and the
+  divide the total time by 100 or 1000 to compute the average time
+  per computation.
 \end{itemize}
 
 
@@ -1756,10 +1905,27 @@ ${x_{right} - x_{left} < \varepsilon}$.
   \code{polyAlmostEqual}?  Can we detect whether two polynomials are
   exactly equal?
 \item Every odd degree polynomial has a real root.  Can you justify
-  this claim?  Write a function to find (estimate) at least one real root of a
-  given odd-degree polynomial.
+  this claim?  Write a function which uses a binary search to find
+  (estimate) at least one real root of a given odd-degree polynomial.
 \item Can you implement \code{polynomialPower} using
   \code{fastPower}.  Is it faster than an iterative implementation?
+\item Given a list of roots (perhaps with repeated roots), generate
+  the polynomial.  Do this in two ways:
+  \begin{enumerate}
+  \item Use the polynomial multiply function written above to expand
+    \[(x - r_1)(x - r_2)\ldots(x - r_{n-1})(x - r_n)\,.\]
+  \item Generate the expansion directly by sums of products of subsets.
+    If \[\Pi_{i=1}^n (x - r_i) = \Sigma_{i=0}^n a_{i}x^{n-i}\,\]
+    and if \[S = \{T\in \{r_1\ldots r_n\} \mid~ |T| = n\}\,,\]
+    then
+    \begin{equation}
+      a_k = \begin{cases}
+        1 & \,; \text{if $k=0$}\\
+        \Sigma_{T\in S}\Pi_{k\in T} k & \,; \text{if $1 \leq k \leq n$}
+      \end{cases}
+    \end{equation}
+    
+  \end{enumerate}
 \item Implement a function to generate a randomly selected polynomial
   of a given degree: \code{randomPoly}.
 \end{itemize}

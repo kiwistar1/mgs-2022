@@ -67,6 +67,7 @@ class QuadraticFormulaTestSuite extends AnyFunSuite {
         case List() => ()
         case List(r1, r2) => check(r1, r2, a, b, c)
         case List(r) => check(r, r, a, b, c)
+        case _ => ???
       }
     }
   }

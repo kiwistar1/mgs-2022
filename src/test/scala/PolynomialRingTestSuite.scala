@@ -19,7 +19,7 @@
 
 import org.scalatest.funsuite.AnyFunSuite
 
-class PolynomialRingTestSuite extends AnyFunSuite {
+class PolynomialRingTestSuite extends munit.FunSuite {
 
   import algebra.PolynomialRing._
 
